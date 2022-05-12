@@ -4,10 +4,13 @@ export default class Keyboard {
   #keyboard;
   #textarea;
   #mode;
+  #lang;
 
   constructor() {
     this.#keyboard = document.querySelector('.keyboard');
     this.#textarea = document.querySelector('textarea');
+
+    this.#lang = localStorage.getItem('lang') ?? 'en';
 
     this.#render('caseDown');
 
@@ -25,14 +28,14 @@ export default class Keyboard {
   }
 
   #render(mode) {
-    if(this.#keyboard && mode !== this.#mode) {
+    if(this.#keyboard && (mode !== this.#mode || localStorage.getItem('lang') !== this.#lang)) {
       this.#mode = mode;
       this.#keyboard.childNodes.forEach((node, i) => {
         const theNode = node;
-        if(localStorage.getItem('lang') === 'ru') {
-          theNode.textContent = rusKeys[i][mode] ?? keys[i].caseDown;
-        } else {
+        if(this.#lang === 'en') {
           theNode.textContent = keys[i][mode] ?? keys[i].caseDown;
+        } else {
+          theNode.textContent = rusKeys[i][mode] ?? keys[i][mode] ?? keys[i].caseDown;
         }
       });
     }
@@ -46,16 +49,17 @@ export default class Keyboard {
 
   #handleKeyDown(e) {
     e.preventDefault();
-    if(e.getModifierState('Shift') && e.getModifierState('Alt')) {
-      if((localStorage.getItem('lang') ?? 'en') === 'en') {
-        localStorage.setItem('lang', 'ru');
+    if(e.getModifierState('Control') && e.getModifierState('Alt')) {
+      if(this.#lang === 'en') {
+        this.#lang = 'ru';
       } else {
-        localStorage.setItem('lang', 'en');
+        this.#lang = 'en';
       }
     }
     this.#keyboard.childNodes.forEach((node) => node.classList.contains(e.code) && node.classList.add('active'));
     this.#renderKeys(e);
     this.#renderTextarea(e.key);
+    localStorage.setItem('lang', this.#lang);
   }
 
   #handleKeyUp(e) {

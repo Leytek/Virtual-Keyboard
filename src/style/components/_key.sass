@@ -10,13 +10,6 @@ button
   border-radius: .5rem
   transition: background $ani_time, border-radius $ani_time
 
-  &:hover
-    background: $color_button_hover
-
-  &.active, &:active
-    border-radius: 5rem
-    background: $color_button_active
-
   &:focus-visible
     outline: none
 
@@ -45,3 +38,14 @@ button
 
   &.Space
     flex-grow: 1
+
+  &.Backspace, &.Tab, &.Delete, &.CapsLock, &.Enter, &.ShiftLeft, &.ShiftRight, &.ControlLeft,
+  &.MetaLeft, &.AltLeft, &.Space, &.ControlRight, &.MetaRight, &.AltRight, &.ArrowUp, &.ArrowLeft, &.ArrowDown, &.ArrowRight
+    background: $color_button_alt
+
+  &:hover
+    background: $color_button_hover
+
+  &.active, &:active
+    border-radius: 5rem
+    background: $color_button_active
