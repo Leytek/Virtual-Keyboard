@@ -6,7 +6,6 @@ import './style/style.sass';
 
 class App {
   #gen;
-
   #key;
 
   constructor() {
@@ -15,7 +14,7 @@ class App {
 
   run() {
     this.#gen.generate();
-    this.#key = new Keyboard();
+    this.#key = new Keyboard(this.#gen.render.bind(this.#gen));
   }
 }
 

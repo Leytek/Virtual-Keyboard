@@ -18,5 +18,7 @@ module.exports = {
         'while': {'after': false},
         'switch': {'after': false},
       }}],
+    'no-console': 'off',
+    'lines-between-class-members': ["error", "always", { "exceptAfterSingleLine": true }],
   },
 };
