@@ -1,16 +1,14 @@
 import keys from './keys';
 
 function createButton(i) {
-  return `<button class="key ${keys[i].code}">${keys[i].caseDown}</button>`;
+  return `<button class="key ${keys[i].code}"></button>`;
 }
 
 export default class PageGenerator {
   #page;
-  #mode;
 
   constructor() {
     this.#page = document.body;
-    this.#mode = 'caseDown';
   }
 
   generate() {
@@ -24,16 +22,5 @@ export default class PageGenerator {
     keys.forEach((key, i) => {
       keyboard.insertAdjacentHTML('beforeend', createButton(i));
     });
-  }
-
-  render(mode) {
-    const keyboard = this.#page.querySelector('.keyboard');
-    if(keyboard && mode !== this.#mode) {
-      this.#mode = mode;
-      keyboard.childNodes.forEach((node, i) => {
-        const theNode = node;
-        theNode.textContent = keys[i][mode] ?? ;
-      });
-    }
   }
 }

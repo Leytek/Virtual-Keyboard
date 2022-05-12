@@ -14,7 +14,7 @@ class App {
 
   run() {
     this.#gen.generate();
-    this.#key = new Keyboard(this.#gen.render.bind(this.#gen));
+    this.#key = new Keyboard();
   }
 }
 

@@ -1,12 +1,15 @@
+import keys from './keys';
+
 export default class Keyboard {
   #keyboard;
   #textarea;
-  #render;
+  #mode;
 
-  constructor(render) {
+  constructor() {
     this.#keyboard = document.querySelector('.keyboard');
     this.#textarea = document.querySelector('textarea');
-    this.#render = render;
+
+    this.#render('caseDown');
 
     this.#keyboard.addEventListener('mousedown', (e) => this.#handleClick(e));
     document.addEventListener('keydown', (e) => this.#handleKeyDown(e));
@@ -21,6 +24,16 @@ export default class Keyboard {
     }
   }
 
+  #render(mode) {
+    if(this.#keyboard && mode !== this.#mode) {
+      this.#mode = mode;
+      this.#keyboard.childNodes.forEach((node, i) => {
+        const theNode = node;
+        theNode.textContent = keys[i][mode] ?? keys[i].caseDown;
+      });
+    }
+  }
+
   #handleClick(e) {
     if(e.target.nodeName === 'BUTTON') {
       this.#renderTextarea(e.target.innerText);
@@ -29,10 +42,16 @@ export default class Keyboard {
 
   #handleKeyDown(e) {
     e.preventDefault();
+    if(e.getModifierState('Shift') && e.getModifierState('Alt')) {
+      if((localStorage.getItem('lang') ?? 'en') === 'en') {
+        localStorage.setItem('lang', 'ru');
+      } else {
+        localStorage.setItem('lang', 'en');
+      }
+    }
     this.#keyboard.childNodes.forEach((node) => node.classList.contains(e.code) && node.classList.add('active'));
     this.#renderKeys(e);
     this.#renderTextarea(e.key);
-    console.log(e.key, e.code);
   }
 
   #handleKeyUp(e) {
