@@ -17,6 +17,7 @@ export default class PageGenerator {
 <textarea ></textarea>
 <div class="keyboard"></div>
 <p>Клавиатура создана в операционной системе Windows</p>
+Для переключения языка комбинация: shift + alt</p>
 </main>`;
     const keyboard = this.#page.querySelector('.keyboard');
     keys.forEach((key, i) => {

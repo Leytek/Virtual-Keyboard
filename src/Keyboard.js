@@ -1,4 +1,4 @@
-import keys from './keys';
+import keys, { rusKeys } from './keys';
 
 export default class Keyboard {
   #keyboard;
@@ -29,7 +29,11 @@ export default class Keyboard {
       this.#mode = mode;
       this.#keyboard.childNodes.forEach((node, i) => {
         const theNode = node;
-        theNode.textContent = keys[i][mode] ?? keys[i].caseDown;
+        if(localStorage.getItem('lang') === 'ru') {
+          theNode.textContent = rusKeys[i][mode] ?? keys[i].caseDown;
+        } else {
+          theNode.textContent = keys[i][mode] ?? keys[i].caseDown;
+        }
       });
     }
   }
@@ -61,7 +65,7 @@ export default class Keyboard {
   }
 
   #renderTextarea(key) {
-    if(key.length === 1 && key !== '←') {
+    if(key.length === 1 && key !== '←' && key !== '▲' && key !== '◄' && key !== '▼' && key !== '►') {
       this.#textarea.textContent += key;
     }
   }
