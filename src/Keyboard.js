@@ -84,7 +84,6 @@ export default class Keyboard {
 
   #renderTextarea(key) {
     let val = this.#textarea.value;
-    console.log(this.#cursor);
     if(key.length === 1 && key !== '←') {
       val = `${val.slice(0, this.#cursor)}${key}${val.slice(this.#cursor)}`;
       this.#cursor += 1;
