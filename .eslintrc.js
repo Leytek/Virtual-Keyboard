@@ -18,7 +18,7 @@ module.exports = {
         'while': {'after': false},
         'switch': {'after': false},
       }}],
-    'no-console': 'off',
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'lines-between-class-members': ["error", "always", { "exceptAfterSingleLine": true }],
   },
 };
