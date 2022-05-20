@@ -6,19 +6,17 @@ export default class Keyboard {
   #capsLock;
   #mode;
   #lang;
-  #cursor;
 
   constructor() {
     this.#keyboard = document.querySelector('.keyboard');
     this.#textarea = document.querySelector('textarea');
-    this.#cursor = this.#textarea.selectionStart;
 
     this.#lang = localStorage.getItem('lang') ?? 'en';
 
     this.#render('caseDown');
 
-    this.#textarea.addEventListener('click', (e) => this.#handleTextarea(e));
     this.#keyboard.addEventListener('mousedown', (e) => this.#handleClick(e));
+    this.#keyboard.addEventListener('mouseup', () => this.#textarea.focus());
     document.addEventListener('keydown', (e) => this.#handleKeyDown(e));
     document.addEventListener('keyup', (e) => this.#handleKeyUp(e));
   }
@@ -47,12 +45,11 @@ export default class Keyboard {
 
   #handleClick(e) {
     if(e.target.nodeName === 'BUTTON') {
-      if(e.target.classList.contains('CapsLock')) {
+      if(e.target.classList.contains('CapsLock') || e.target.className.includes('Shift')) {
         this.#capsLock = !this.#capsLock;
         e.target.classList.toggle('active');
         this.#renderKeys(e);
-      }
-      this.#renderTextarea(e.target.innerText);
+      } else this.#renderTextarea(e.target.innerText);
     }
   }
 
@@ -68,7 +65,6 @@ export default class Keyboard {
       this.#capsLock = e.getModifierState('CapsLock');
     }
     this.#keyboard.childNodes.forEach((node) => node.classList.contains(e.code) && node.classList.add('active'));
-    this.#cursor = this.#textarea.selectionStart;
     if(document.activeElement === this.#textarea && e.code === 'Tab') {
       e.preventDefault();
       this.#renderTextarea(e.key);
@@ -82,28 +78,31 @@ export default class Keyboard {
     this.#renderKeys(e);
   }
 
-  #handleTextarea() {
-    this.#cursor = this.#textarea.selectionStart;
-  }
-
   #renderTextarea(key) {
     let val = this.#textarea.value;
+    let cursor = this.#textarea.selectionStart;
+    const cursorEnd = this.#textarea.selectionEnd;
     if(key.length === 1 && key !== '←') {
-      val = `${val.slice(0, this.#cursor)}${key}${val.slice(this.#cursor)}`;
-      this.#cursor += 1;
-    } else if((key === '←' || key === 'Backspace') && this.#cursor > 0) {
-      val = val.slice(0, this.#cursor - 1) + val.slice(this.#cursor);
-      this.#cursor -= 1;
+      val = `${val.slice(0, cursor)}${key}${val.slice(cursorEnd)}`;
+      cursor += 1;
+    } else if((key === '←' || key === 'Backspace') && cursor > 0) {
+      val = val.slice(0, cursor - 1) + val.slice(cursorEnd);
+      cursor -= 1;
     } else if(key === 'Delete') {
-      val = val.slice(0, this.#cursor) + val.slice(this.#cursor + 1);
+      val = val.slice(0, cursor) + val.slice(cursorEnd + 1);
     } else if(key === 'Tab') {
-      val = `${val.slice(0, this.#cursor)}\t${val.slice(this.#cursor)}`;
-      this.#cursor += 1;
+      val = `${val.slice(0, cursor)}\t${val.slice(cursorEnd)}`;
+      cursor += 1;
     } else if(key === 'Enter') {
-      val = `${val.slice(0, this.#cursor)}\n${val.slice(this.#cursor)}`;
-      this.#cursor += 1;
+      val = `${val.slice(0, cursor)}\n${val.slice(cursorEnd)}`;
+      cursor += 1;
+    } else if(key === 'Space') {
+      val = `${val.slice(0, cursor)} ${val.slice(cursorEnd)}`;
+      cursor += 1;
+    } else if(key === 'ArrowLeft') {
+      cursor += 1;
     }
     this.#textarea.value = val;
-    this.#textarea.setSelectionRange(this.#cursor, this.#cursor);
+    this.#textarea.setSelectionRange(cursor, cursor);
   }
 }
