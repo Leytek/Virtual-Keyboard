@@ -67,9 +67,13 @@ export default class Keyboard {
     if(e.code === 'CapsLock') {
       this.#capsLock = e.getModifierState('CapsLock');
     }
-    this.#keyboard.childNodes.forEach((node) => node.classList.contains(e.code) && (e.preventDefault(), node.classList.add('active')));
+    this.#keyboard.childNodes.forEach((node) => node.classList.contains(e.code) && node.classList.add('active'));
+    this.#cursor = this.#textarea.selectionStart;
+    if(document.activeElement === this.#textarea && e.code === 'Tab') {
+      e.preventDefault();
+      this.#renderTextarea(e.key);
+    }
     this.#renderKeys(e);
-    this.#renderTextarea(e.key);
     localStorage.setItem('lang', this.#lang);
   }
 
