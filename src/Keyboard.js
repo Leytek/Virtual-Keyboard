@@ -84,31 +84,18 @@ export default class Keyboard {
     let char = '';
     let cursor = this.#textarea.selectionStart;
     let cursorEnd = this.#textarea.selectionEnd;
-    if((code !== 'Backspace' && code !== 'Delete') || cursor !== cursorEnd) {
-      if(code === 'Tab') {
-        char = '\t';
-      } else if(code === 'Enter') {
-        char = '\n';
-      } else if(code === 'Space') {
-        char = ' ';
-      } else if(code === 'ArrowLeft') {
-        [cursor, cursorEnd] = [cursor - 1, cursor - 1];
-      } else if(code === 'ArrowRight') {
-        [cursor, cursorEnd] = [cursor + 1, cursor + 1];
-      } else if(code === 'ArrowUp') {
-        [cursor, cursorEnd] = [Math.max(cursor - 73, 0), Math.max(cursor - 73, 0)];
-      } else if(code === 'ArrowDown') {
-        [cursor, cursorEnd] = [cursor + 73, cursor + 73];
-      } else if(code.match(/Control|Alt|Meta/g)) {
-        return;
-      } else {
-        char = Keys.getKey(code, this.#mode, this.#lang);
-      }
-      this.#textarea.setRangeText(char, cursor, cursorEnd, 'end');
-    } else if(code === 'Backspace' && cursor > 0) {
-      this.#textarea.setRangeText('', cursor - 1, cursor, 'start');
-    } else if(code === 'Delete') {
-      this.#textarea.setRangeText('', cursor, cursor + 1);
-    }
+    if(code === 'Tab') char = '\t';
+    else if(code === 'Enter') char = '\n';
+    else if(code === 'Space') char = ' ';
+    else if(code === 'Backspace' && cursor === cursorEnd) cursor = Math.max(cursor - 1, 0);
+    else if(code === 'Delete' && cursor === cursorEnd) cursorEnd = cursor + 1;
+    else if(code === 'Backspace' || code === 'Delete');
+    else if(code === 'ArrowLeft') [cursor, cursorEnd] = [cursor - 1, cursor - 1];
+    else if(code === 'ArrowRight') [cursor, cursorEnd] = [cursor + 1, cursor + 1];
+    else if(code === 'ArrowUp') [cursor, cursorEnd] = [Math.max(cursor - 73, 0), Math.max(cursor - 73, 0)];
+    else if(code === 'ArrowDown') [cursor, cursorEnd] = [cursor + 73, cursor + 73];
+    else if(code.match(/Control|Alt|Meta/g)) return;
+    else char = Keys.getKey(code, this.#mode, this.#lang);
+    this.#textarea.setRangeText(char, cursor, cursorEnd, 'end');
   }
 }
