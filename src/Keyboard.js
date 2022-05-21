@@ -82,27 +82,33 @@ export default class Keyboard {
 
   #renderTextarea(code) {
     let char = '';
-    const cursor = this.#textarea.selectionStart;
-    const cursorEnd = this.#textarea.selectionEnd;
-    console.log(code);
+    let cursor = this.#textarea.selectionStart;
+    let cursorEnd = this.#textarea.selectionEnd;
     if((code !== 'Backspace' && code !== 'Delete') || cursor !== cursorEnd) {
-      if(code.length === 4) {
-        char = Keys.getKey(code, this.#mode, this.#lang);
-      } else if(code === 'Tab') {
+      if(code === 'Tab') {
         char = '\t';
       } else if(code === 'Enter') {
         char = '\n';
       } else if(code === 'Space') {
         char = ' ';
+      } else if(code === 'ArrowLeft') {
+        [cursor, cursorEnd] = [cursor - 1, cursor - 1];
+      } else if(code === 'ArrowRight') {
+        [cursor, cursorEnd] = [cursor + 1, cursor + 1];
+      } else if(code === 'ArrowUp') {
+        [cursor, cursorEnd] = [Math.max(cursor - 73, 0), Math.max(cursor - 73, 0)];
+      } else if(code === 'ArrowDown') {
+        [cursor, cursorEnd] = [cursor + 73, cursor + 73];
+      } else if(code.match(/Control|Alt|Meta/g)) {
+        return;
+      } else {
+        char = Keys.getKey(code, this.#mode, this.#lang);
       }
       this.#textarea.setRangeText(char, cursor, cursorEnd, 'end');
-    } else if(cursor === cursorEnd) {
-      if(code === 'Backspace' && cursor > 0) {
-        this.#textarea.setRangeText('', cursor - 1, cursor);
-        this.#textarea.setSelectionRange(cursor - 1, cursor - 1);
-      } else if(code === 'Delete') {
-        this.#textarea.setRangeText('', cursor, cursor + 1);
-      }
+    } else if(code === 'Backspace' && cursor > 0) {
+      this.#textarea.setRangeText('', cursor - 1, cursor, 'start');
+    } else if(code === 'Delete') {
+      this.#textarea.setRangeText('', cursor, cursor + 1);
     }
   }
 }
