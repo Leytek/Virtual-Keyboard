@@ -2,22 +2,18 @@ import Keys from './Keys';
 
 export default class Keyboard {
   #keyboard;
-  #textarea;
   #capsLock;
   #mode;
   #lang;
 
   constructor() {
     this.#keyboard = document.querySelector('.keyboard');
-    this.#textarea = document.querySelector('textarea');
-
     this.#mode = 'caseDown';
     this.#lang = localStorage.getItem('lang') ?? 'en';
 
     this.#generate();
 
     this.#keyboard.addEventListener('mousedown', (e) => this.#handleClick(e));
-    this.#keyboard.addEventListener('mouseup', () => this.#textarea.focus());
     document.addEventListener('keydown', (e) => this.#handleKeyDown(e));
     document.addEventListener('keyup', (e) => this.#handleKeyUp(e));
   }
@@ -46,12 +42,13 @@ export default class Keyboard {
   }
 
   #handleClick(e) {
+    e.preventDefault();
     if(e.target.nodeName === 'BUTTON') {
       if(e.target.classList.contains('CapsLock') || e.target.className.includes('Shift')) {
         this.#capsLock = !this.#capsLock;
         e.target.classList.toggle('active');
         this.#renderKeys(e);
-      } else this.#renderTextarea(e.target.classList[1]);
+      } else this.#renderText(e.target.classList[1]);
     }
   }
 
@@ -67,9 +64,9 @@ export default class Keyboard {
       this.#capsLock = e.getModifierState('CapsLock');
     }
     this.#keyboard.childNodes.forEach((node) => node.classList.contains(e.code) && node.classList.add('active'));
-    if(document.activeElement === this.#textarea && e.code === 'Tab') {
+    if(document.activeElement.setRangeText && e.code === 'Tab') {
       e.preventDefault();
-      this.#renderTextarea(e.code);
+      this.#renderText(e.code);
     }
     this.#renderKeys(e);
     localStorage.setItem('lang', this.#lang);
@@ -80,10 +77,11 @@ export default class Keyboard {
     this.#renderKeys(e);
   }
 
-  #renderTextarea(code) {
+  #renderText(code) {
+    if(!document.activeElement.setRangeText) return;
     let char = '';
-    let cursor = this.#textarea.selectionStart;
-    let cursorEnd = this.#textarea.selectionEnd;
+    let cursor = document.activeElement.selectionStart;
+    let cursorEnd = document.activeElement.selectionEnd;
     if(code === 'Tab') char = '\t';
     else if(code === 'Enter') char = '\n';
     else if(code === 'Space') char = ' ';
@@ -96,6 +94,6 @@ export default class Keyboard {
     else if(code === 'ArrowDown') [cursor, cursorEnd] = [cursor + 73, cursor + 73];
     else if(code.match(/Control|Alt|Meta/g)) return;
     else char = Keys.getKey(code, this.#mode, this.#lang);
-    this.#textarea.setRangeText(char, cursor, cursorEnd, 'end');
+    document.activeElement.setRangeText(char, cursor, cursorEnd, 'end');
   }
 }
