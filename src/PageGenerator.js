@@ -1,9 +1,3 @@
-import keys from './keys';
-
-function createButton(i) {
-  return `<button class="key ${keys[i].code}"></button>`;
-}
-
 export default class PageGenerator {
   #page;
 
@@ -19,9 +13,5 @@ export default class PageGenerator {
 <p>Клавиатура создана в операционной системе Windows</p>
 <p>Для переключения языка комбинация: ctrl + alt</p>
 </main>`;
-    const keyboard = this.#page.querySelector('.keyboard');
-    keys.forEach((key, i) => {
-      keyboard.insertAdjacentHTML('beforeend', createButton(i));
-    });
   }
 }

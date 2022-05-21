@@ -1,4 +1,4 @@
-import keys, { rusKeys } from './keys';
+import Keys from './Keys';
 
 export default class Keyboard {
   #keyboard;
@@ -11,14 +11,21 @@ export default class Keyboard {
     this.#keyboard = document.querySelector('.keyboard');
     this.#textarea = document.querySelector('textarea');
 
+    this.#mode = 'caseDown';
     this.#lang = localStorage.getItem('lang') ?? 'en';
 
-    this.#render('caseDown');
+    this.#generate();
 
     this.#keyboard.addEventListener('mousedown', (e) => this.#handleClick(e));
     this.#keyboard.addEventListener('mouseup', () => this.#textarea.focus());
     document.addEventListener('keydown', (e) => this.#handleKeyDown(e));
     document.addEventListener('keyup', (e) => this.#handleKeyUp(e));
+  }
+
+  #generate() {
+    Keys.en.forEach((key) => {
+      this.#keyboard.insertAdjacentHTML('beforeend', `<button class="key ${key.code}">${Keys.getKey(key.code, this.#mode, this.#lang)}</button>`);
+    });
   }
 
   #renderKeys(e) {
@@ -32,13 +39,8 @@ export default class Keyboard {
   #render(mode) {
     if(this.#keyboard && (mode !== this.#mode || localStorage.getItem('lang') !== this.#lang)) {
       this.#mode = mode;
-      this.#keyboard.childNodes.forEach((node, i) => {
-        const theNode = node;
-        if(this.#lang === 'en') {
-          theNode.textContent = keys[i][mode] ?? keys[i].caseDown;
-        } else {
-          theNode.textContent = rusKeys[i][mode] ?? keys[i][mode] ?? keys[i].caseDown;
-        }
+      this.#keyboard.childNodes.forEach((node) => {
+        node.textContent = Keys.getKey(node.classList[1], mode, this.#lang);
       });
     }
   }
@@ -49,7 +51,7 @@ export default class Keyboard {
         this.#capsLock = !this.#capsLock;
         e.target.classList.toggle('active');
         this.#renderKeys(e);
-      } else this.#renderTextarea(e.target.innerText);
+      } else this.#renderTextarea(e.target.classList[1]);
     }
   }
 
@@ -67,7 +69,7 @@ export default class Keyboard {
     this.#keyboard.childNodes.forEach((node) => node.classList.contains(e.code) && node.classList.add('active'));
     if(document.activeElement === this.#textarea && e.code === 'Tab') {
       e.preventDefault();
-      this.#renderTextarea(e.key);
+      this.#renderTextarea(e.code);
     }
     this.#renderKeys(e);
     localStorage.setItem('lang', this.#lang);
@@ -78,31 +80,29 @@ export default class Keyboard {
     this.#renderKeys(e);
   }
 
-  #renderTextarea(key) {
-    let val = this.#textarea.value;
-    let cursor = this.#textarea.selectionStart;
+  #renderTextarea(code) {
+    let char = '';
+    const cursor = this.#textarea.selectionStart;
     const cursorEnd = this.#textarea.selectionEnd;
-    if(key.length === 1 && key !== '←') {
-      val = `${val.slice(0, cursor)}${key}${val.slice(cursorEnd)}`;
-      cursor += 1;
-    } else if((key === '←' || key === 'Backspace') && cursor > 0) {
-      val = val.slice(0, cursor - 1) + val.slice(cursorEnd);
-      cursor -= 1;
-    } else if(key === 'Delete') {
-      val = val.slice(0, cursor) + val.slice(cursorEnd + 1);
-    } else if(key === 'Tab') {
-      val = `${val.slice(0, cursor)}\t${val.slice(cursorEnd)}`;
-      cursor += 1;
-    } else if(key === 'Enter') {
-      val = `${val.slice(0, cursor)}\n${val.slice(cursorEnd)}`;
-      cursor += 1;
-    } else if(key === 'Space') {
-      val = `${val.slice(0, cursor)} ${val.slice(cursorEnd)}`;
-      cursor += 1;
-    } else if(key === 'ArrowLeft') {
-      cursor += 1;
+    console.log(code);
+    if((code !== 'Backspace' && code !== 'Delete') || cursor !== cursorEnd) {
+      if(code.length === 4) {
+        char = Keys.getKey(code, this.#mode, this.#lang);
+      } else if(code === 'Tab') {
+        char = '\t';
+      } else if(code === 'Enter') {
+        char = '\n';
+      } else if(code === 'Space') {
+        char = ' ';
+      }
+      this.#textarea.setRangeText(char, cursor, cursorEnd, 'end');
+    } else if(cursor === cursorEnd) {
+      if(code === 'Backspace' && cursor > 0) {
+        this.#textarea.setRangeText('', cursor - 1, cursor);
+        this.#textarea.setSelectionRange(cursor - 1, cursor - 1);
+      } else if(code === 'Delete') {
+        this.#textarea.setRangeText('', cursor, cursor + 1);
+      }
     }
-    this.#textarea.value = val;
-    this.#textarea.setSelectionRange(cursor, cursor);
   }
 }
