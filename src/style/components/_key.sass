@@ -1,0 +1,51 @@
+@use "sass:math"
+
+.key
+  @extend %font_button
+  width: $key_size
+  height: $key_size
+  color: $color_prime
+  background: $color_button
+  border: none
+  border-radius: .5rem
+  transition: background $ani_time, border-radius $ani_time
+
+  &:focus-visible
+    outline: none
+
+  &.Backspace
+    flex-grow: 1
+
+  &.Tab
+    width: $key_size + math.div($key_size + $key_gap, 2)
+
+  &.Delete
+    flex-grow: 1
+
+  &.CapsLock
+    width: $key_size + math.div($key_size + $key_gap, 1.3)
+
+  &.Enter
+    flex-grow: 1
+    min-width: $key_size + math.div($key_size + $key_gap, 1.3)
+
+  &.ShiftLeft
+    width: $key_size + math.div($key_size + $key_gap, 2) + math.div($key_size + $key_gap, 1.3)
+
+  &.ShiftRight
+    flex-grow: 1
+    min-width: $key_size + math.div($key_size + $key_gap, 2)
+
+  &.Space
+    flex-grow: 1
+
+  &.Backspace, &.Tab, &.Delete, &.CapsLock, &.Enter, &.ShiftLeft, &.ShiftRight, &.ControlLeft,
+  &.MetaLeft, &.AltLeft, &.Space, &.ControlRight, &.MetaRight, &.AltRight, &.ArrowUp, &.ArrowLeft, &.ArrowDown, &.ArrowRight
+    background: $color_button_alt
+
+  &:hover
+    background: $color_button_hover
+
+  &.active, &:active
+    border-radius: 5rem
+    background: $color_button_active
