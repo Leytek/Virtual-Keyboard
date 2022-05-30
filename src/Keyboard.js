@@ -25,11 +25,10 @@ export default class Keyboard {
   }
 
   #renderKeys(e) {
-    if((this.#capsLock && !e.getModifierState('Shift')) || (!this.#capsLock && e.getModifierState('Shift'))) {
+    if((this.#capsLock && !e.getModifierState('Shift')) || (!this.#capsLock && e.getModifierState('Shift')))
       this.#render('caseUp');
-    } else {
+    else
       this.#render('caseDown');
-    }
   }
 
   #render(mode) {
@@ -43,26 +42,22 @@ export default class Keyboard {
 
   #handleClick(e) {
     e.preventDefault();
-    if(e.target.nodeName === 'BUTTON') {
+    if(e.target.nodeName === 'BUTTON')
       if(e.target.classList.contains('CapsLock') || e.target.className.includes('Shift')) {
         this.#capsLock = !this.#capsLock;
         e.target.classList.toggle('active');
         this.#renderKeys(e);
       } else this.#renderText(e.target.classList[1]);
-    }
   }
 
   #handleKeyDown(e) {
-    if(e.getModifierState('Control') && e.getModifierState('Alt')) {
-      if(this.#lang === 'en') {
+    if(e.getModifierState('Control') && e.getModifierState('Alt'))
+      if(this.#lang === 'en')
         this.#lang = 'ru';
-      } else {
+      else
         this.#lang = 'en';
-      }
-    }
-    if(e.code === 'CapsLock') {
+    if(e.code === 'CapsLock')
       this.#capsLock = e.getModifierState('CapsLock');
-    }
     this.#keyboard.childNodes.forEach((node) => node.classList.contains(e.code) && node.classList.add('active'));
     if(document.activeElement.setRangeText && e.code === 'Tab') {
       e.preventDefault();
@@ -82,16 +77,26 @@ export default class Keyboard {
     let char = '';
     let cursor = document.activeElement.selectionStart;
     let cursorEnd = document.activeElement.selectionEnd;
-    if(code === 'Tab') char = '\t';
-    else if(code === 'Enter') char = '\n';
-    else if(code === 'Space') char = ' ';
-    else if(code === 'Backspace' && cursor === cursorEnd) cursor = Math.max(cursor - 1, 0);
-    else if(code === 'Delete' && cursor === cursorEnd) cursorEnd = cursor + 1;
-    else if(code === 'Backspace' || code === 'Delete');
-    else if(code === 'ArrowLeft') [cursor, cursorEnd] = [cursor - 1, cursor - 1];
-    else if(code === 'ArrowRight') [cursor, cursorEnd] = [cursor + 1, cursor + 1];
-    else if(code === 'ArrowUp') [cursor, cursorEnd] = [Math.max(cursor - 73, 0), Math.max(cursor - 73, 0)];
-    else if(code === 'ArrowDown') [cursor, cursorEnd] = [cursor + 73, cursor + 73];
+    if(code === 'Tab')
+      char = '\t';
+    else if(code === 'Enter')
+      char = '\n';
+    else if(code === 'Space')
+      char = ' ';
+    else if(code === 'Backspace' && cursor === cursorEnd)
+      cursor = Math.max(cursor - 1, 0);
+    else if(code === 'Delete' && cursor === cursorEnd)
+      cursorEnd = cursor + 1;
+    else if(code === 'Backspace' || code === 'Delete')
+      ;
+    else if(code === 'ArrowLeft')
+      [cursor, cursorEnd] = [cursor - 1, cursor - 1];
+    else if(code === 'ArrowRight')
+      [cursor, cursorEnd] = [cursor + 1, cursor + 1];
+    else if(code === 'ArrowUp')
+      [cursor, cursorEnd] = [Math.max(cursor - 73, 0), Math.max(cursor - 73, 0)];
+    else if(code === 'ArrowDown')
+      [cursor, cursorEnd] = [cursor + 73, cursor + 73];
     else if(code.match(/Control|Alt|Meta/g)) return;
     else char = Keys.getKey(code, this.#mode, this.#lang);
     document.activeElement.setRangeText(char, cursor, cursorEnd, 'end');

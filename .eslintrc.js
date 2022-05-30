@@ -21,5 +21,7 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'lines-between-class-members': ["error", "always", { "exceptAfterSingleLine": true }],
     'no-param-reassign': 'off',
+    'curly': ['error', 'multi'],
+    'nonblock-statement-body-position': ['error', 'any'],
   },
 };
